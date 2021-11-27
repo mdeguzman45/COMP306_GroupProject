@@ -1,47 +1,49 @@
-@model IEnumerable<StockClient.Models.Stock>
+@model StockClient.Models.Stock
 
 @{
     ViewData["Title"] = "Stock Details";
 }
 
-<h1>Index</h1>
+<h1>Stock Details</h1>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Symbol)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Name)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Price)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.LastPrice)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>
-                   @Html.DisplayFor(modelItem => item.Symbol)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Name)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Price)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.LastPrice)
-                </td>
-            </tr>
-        }
+<div class="container">
+    <h4>
+        @Html.DisplayFor(model => model.Name)
+    </h4>
+    <div class="row">
+        <div class="col-sm-3">
+            Symbol
+        </div>
+        <div class="col-sm-6">
+            @Html.DisplayFor(model => model.Symbol)
+        </div>
+    </div>
 
-    </tbody>
-</table>
+    <div class="row">
+        <div class="col-sm-3">
+            Price
+        </div>
+        <div class="col-sm-6">
+            $@Html.DisplayFor(model => model.Price)
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-3">
+            Last Price
+        </div>
+        <div class="col-sm-6">
+            $@Html.DisplayFor(model => model.LastPrice)
+        </div>
+    </div>
+    <br />
+
+    <div class="row">
+        <div class="col-sm-3">
+        </div>
+        <div class="col-sm-6">
+            <a asp-action="OpenTrade" asp-controller="UserTrades" asp-route-symbol="@Model.Symbol" class="btn btn-primary">Open Trade</a>
+        </div>
+    </div>
+
+</div>

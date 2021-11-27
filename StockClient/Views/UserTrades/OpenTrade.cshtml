@@ -1,0 +1,79 @@
+<script type="text/javascript" >
+    function setPurchaseBy(purchaseBy) {
+
+        var amountInput = document.opentrade.amountInput;
+        var unitInput = document.opentrade.unitInput;
+
+        if (purchaseBy == 'Amount') {
+            amountInput.enabled = false;
+        }
+        else if (purchaseBy == 'Unit') {
+            unitInput.disabled = false;
+        }
+        else {
+            amountInput.disabled = true;
+            unitInput.disabled = true;
+        }
+    }
+</script>
+
+<h1>New Trade</h1>
+
+<div class="container">
+    <div class="col-md-8 offset-md-2">
+        <div>
+            <h3>Create Trade - @ViewBag.Stock.Name (@ViewBag.Stock.Symbol)</h3>
+        </div>
+        <div class="bg-light mt-4 p-4">
+            <form asp-action="OpenTrade" class="row g-3" name="opentrade" method="post">
+                <div class="col-md-6">
+                    <label for="position">Position</label>
+                    <select name="position" id="position" class="form-control">
+                        <option value="BUY" selected> BUY </option>
+                        <option value="SELL"> SELL </option>
+                    </select>
+                </div>
+
+                <div class="col-md-6">
+                    <label for="shareprice">Share Price</label>
+                    <input type="text" name="shareprice" id="shareprice" class="form-control" value="@ViewBag.Stock.Price" readonly />
+                </div>
+
+                <div class="col-md-6 pt-1">
+                    <label for="purchaseBy">Purchase By</label>
+                    <select name="purchaseBy" id="purchaseBy" class="form-control" onchange="setPurchaseBy(this.value)" >
+                        <option value="">-Select Purchase Type- </option>
+                        <option value="Amount"> Amount </option>
+                        <option value="Unit"> Unit </option>
+                    </select>
+                </div>
+                <div class="col-md-6 pt-1"></div>
+
+                <div class="col-md-6 pt-1">
+                    <label for="unit">Unit</label>
+                    <input type="text" name="unit" id="unit" class="form-control" />
+                </div>
+
+                <div class="col-md-6 pt-1">
+                    <label for="amount">Amount</label>
+                    <input type="text" name="amount" id="amount" class="form-control" />
+                </div>
+
+                <div class="col-md-6 pt-1">
+                    <label for="availablefunds">Available Funds</label>
+                    <input type="text" name="availablefunds" id="availablefunds" class="form-control" value="@ViewBag.AvailableFunds" readonly />
+                </div>
+                <div class="col-md-6 pt-1"></div>
+                
+
+                <div class="col-md-6 pt-3"></div>
+                <div class="col-md-6 pt-3 d-md-flex justify-content-md-end">
+                    <button type="submit" class="btn btn-primary mr-2"> Create </button>
+                    <a asp-action="Details" asp-controller="Stocks" asp-route-inputSymbol="@ViewBag.Stock.Symbol" class="btn btn-warning"> Cancel </a>
+                </div>
+
+                <input type="hidden" name="symbol" id="symbol" value="@ViewBag.Stock.Symbol" />
+            </form>
+        </div>
+    </div>
+</div>

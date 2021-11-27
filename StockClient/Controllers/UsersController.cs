@@ -171,7 +171,7 @@ namespace StockClient.Controllers
                 else
                 {
                     HttpContext.Session.SetString("LoggedInUser", objLoginModel.Username);
-                    return RedirectToAction("Index", "Home");
+                    return RedirectToAction("Index", "Stocks");
                 }
             }
             return View();

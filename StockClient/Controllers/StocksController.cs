@@ -45,7 +45,6 @@ namespace StockClient.Controllers
 
                 //returning the employee list to view
                 return View(StockInfo);
-
             }
         }
 
@@ -64,7 +63,7 @@ namespace StockClient.Controllers
                 //Define request data format
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-               
+
                 //Sending request to find web api REST service resource GetAllEmployees using HttpClient
                 HttpResponseMessage Res = await client.GetAsync("api/stock/" + inputSymbol);
 
@@ -79,13 +78,9 @@ namespace StockClient.Controllers
                     StockInfo = JsonConvert.DeserializeObject<Stock>(StockResponse);
                 }
 
-                //returning the employee list to view
+                //returning the stock details to view
                 return View(StockInfo);
-
             }
         }
-
-
     }
-
 }

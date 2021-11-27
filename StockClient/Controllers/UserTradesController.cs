@@ -9,6 +9,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace StockClient.Controllers
@@ -17,6 +18,13 @@ namespace StockClient.Controllers
     {
         //Hosted web API REST Service base url
         string Baseurl = "http://stockapi-dev.us-east-1.elasticbeanstalk.com/";
+
+        private readonly USERLOGINContext _loginContext;
+
+        public UserTradesController(USERLOGINContext loginContext)
+        {
+            _loginContext = loginContext;
+        }
 
         public async Task<ActionResult> Index()
         {
@@ -83,6 +91,120 @@ namespace StockClient.Controllers
                 //returning the employee list to view
                 return View(UserTradeInfo);
             }
+        }
+
+        public async Task<IActionResult> OpenTrade(string symbol)
+        {
+            // Get the stock information
+            Stock stock = await GetStockDetails(symbol);
+            ViewBag.Stock = stock;
+
+            // Get the user details
+            var loggedInUser = HttpContext.Session.GetString("LoggedInUser");
+            User userDetails = _loginContext.Customers.Where(e => e.Username == loggedInUser).FirstOrDefault();
+
+            if (userDetails == null)
+            {
+                return NotFound();
+            }
+            ViewBag.AvailableFunds = userDetails.Available;
+
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> OpenTrade(IFormCollection formCollection)
+        // public IActionResult OpenTrade(IFormCollection formCollection)
+        {
+            var entryPrice = formCollection["shareprice"];
+            var symbol = formCollection["symbol"];
+            var unit = formCollection["unit"];
+            var amount = formCollection["amount"];
+            var position = formCollection["position"];
+            string tradeOpenDate = DateTime.Now.ToString("MM/dd/yyyy");
+            long tradeId = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+            var loggedInUser = HttpContext.Session.GetString("LoggedInUser");
+
+            var parsedUnit = float.Parse(unit);
+            var parsedAmount = float.Parse(amount);
+            var parsedEntryPrice = float.Parse(entryPrice);
+
+            Console.WriteLine($"entry price: {entryPrice}\nsymbol: {symbol}\nunit: {unit}\namount: {amount}");
+            // Create the UserTrade Object for Post Request
+            UserTrade userTrade = new UserTrade
+                {
+                    TradeId = 10, // remove this when republished with long TradeId
+                    // TradeId = tradeId,
+                    Username = loggedInUser,
+                    Symbol = symbol,
+                    Units = parsedUnit,
+                    Position = position,
+                    TradeOpenDate = tradeOpenDate,
+                    TradeCloseDate = "",
+                    EntryPrice = parsedEntryPrice,
+                    Amount = parsedAmount
+            };
+
+            using (var client = new HttpClient())
+            {
+                //Passing service base url
+                client.BaseAddress = new Uri(Baseurl);
+                client.DefaultRequestHeaders.Clear();
+
+                //Define request data format
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                var json = JsonConvert.SerializeObject(userTrade);
+                StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                //Sending request to find web api REST service resource create user trade
+                HttpResponseMessage Res = await client.PostAsync("/api/createtrade", content);
+
+                Console.WriteLine($"status from POST {Res.StatusCode}");
+
+                //Checking the response is successful or not which is sent using HttpClient
+                if (Res.IsSuccessStatusCode)
+                {
+                    return RedirectToAction("Index", "UserTrades");
+                }
+            }
+
+            // if we got an error return not found
+            return NotFound();
+            
+        }
+
+        public async Task<Stock> GetStockDetails(string inputSymbol)
+        {
+
+            //List<Stock> StockInfo = new List<Stock>();
+            Stock StockInfo = new Stock();
+            using (var client = new HttpClient())
+            {
+                //Passing service base url
+                client.BaseAddress = new Uri(Baseurl);
+                client.DefaultRequestHeaders.Clear();
+
+                //Define request data format
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+
+                //Sending request to find web api REST service resource GetAllEmployees using HttpClient
+                HttpResponseMessage Res = await client.GetAsync("api/stock/" + inputSymbol);
+
+                //Checking the response is successful or not which is sent using HttpClient
+                if (Res.IsSuccessStatusCode)
+                {
+                    //Storing the response details recieved from web api
+                    var StockResponse = Res.Content.ReadAsStringAsync().Result;
+
+                    //Deserializing the response recieved from web api and storing into the Employee list
+                    //StockInfo = JsonConvert.DeserializeObject<List<Stock>>(StockResponse);
+                    StockInfo = JsonConvert.DeserializeObject<Stock>(StockResponse);
+                }
+            }
+
+            return StockInfo;
         }
     }
 }

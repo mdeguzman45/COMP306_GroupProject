@@ -1,0 +1,75 @@
+@model IEnumerable<StockClient.Models.UserTrade>
+@using Microsoft.AspNetCore.Http;
+
+@{
+    ViewData["Title"] = "Trade History";
+    string loggedInUser = Context.Session.GetString("LoggedInUser");
+}
+
+<h1>Trade History for @loggedInUser</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.TradeId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Symbol)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Units)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Position)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TradeOpenDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TradeCloseDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.EntryPrice)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Amount)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.TradeId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Symbol)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Units)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Position)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TradeOpenDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TradeCloseDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EntryPrice)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Amount)
+            </td>
+            <td>
+                <a asp-action="Delete" asp-route-id="@item.TradeId">Delete</a>
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>

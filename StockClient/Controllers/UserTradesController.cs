@@ -142,7 +142,6 @@ namespace StockClient.Controllers
                     TradeId = generator.Next(0, 1000000),
 
             //TradeId = DateTimeOffset.Now.ToUnixTimeMilliseconds(),
-            //TradeId = 10, // remove this when republished with long TradeId
             // TradeId = tradeId,
                     Username = loggedInUser,
                     Symbol = symbol,

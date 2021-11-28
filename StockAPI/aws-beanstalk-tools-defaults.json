@@ -8,7 +8,7 @@
     "environment"    : "StockAPI-dev",
     "enable-xray"    : false,
     "enhanced-health-type" : "basic",
-    "additional-options"   : "\"aws:autoscaling:launchconfiguration,SecurityGroups\"=\"sg-004c98e56fb8b2195,sg-0745df786dbc30767\";\"aws:ec2:vpc,Subnets\"=\"subnet-0c68940374a0325a7,subnet-07ac68b6abded7e11\"",
+    "additional-options"   : "",
     "solution-stack"       : "64bit Amazon Linux 2 v2.2.8 running .NET Core",
     "environment-type"     : "SingleInstance",
     "cname"                : "stockapi-dev",

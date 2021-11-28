@@ -1,0 +1,9 @@
+@model IEnumerable<StockClient.Models.UserTrade>
+@using Microsoft.AspNetCore.Http;
+
+@{
+    ViewData["Title"] = "Closed Trade";
+    string loggedInUser = Context.Session.GetString("LoggedInUser");
+}
+
+<h1>Trade Closed</h1>

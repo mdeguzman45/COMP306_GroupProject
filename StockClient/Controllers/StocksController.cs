@@ -51,7 +51,7 @@ namespace StockClient.Controllers
 
         public async Task<ActionResult> Details(string inputSymbol)
         {
-
+            Console.WriteLine("StocksController - Details");
             //List<Stock> StockInfo = new List<Stock>();
             Stock StockInfo = new Stock();
             using (var client = new HttpClient())

@@ -62,6 +62,7 @@ namespace StockClient.Controllers
         public async Task<ActionResult> History()
         {
             List<UserTrade> UserTradeInfo = new List<UserTrade>();
+            //UserTrade UserTradeInfo = new UserTrade();
 
             using (var client = new HttpClient())
             {
@@ -86,6 +87,7 @@ namespace StockClient.Controllers
 
                     //Deserializing the response recieved from web api and storing into the Employee list
                     UserTradeInfo = JsonConvert.DeserializeObject<List<UserTrade>>(UserTradeResponse);
+                    //UserTradeInfo = JsonConvert.DeserializeObject<UserTrade>(UserTradeResponse);
                 }
 
                 //returning the employee list to view
@@ -130,12 +132,18 @@ namespace StockClient.Controllers
             var parsedAmount = float.Parse(amount);
             var parsedEntryPrice = float.Parse(entryPrice);
 
+            Random generator = new Random();
+
             Console.WriteLine($"entry price: {entryPrice}\nsymbol: {symbol}\nunit: {unit}\namount: {amount}");
             // Create the UserTrade Object for Post Request
             UserTrade userTrade = new UserTrade
                 {
-                    TradeId = 10, // remove this when republished with long TradeId
-                    // TradeId = tradeId,
+                 
+                    TradeId = generator.Next(0, 1000000),
+
+            //TradeId = DateTimeOffset.Now.ToUnixTimeMilliseconds(),
+            //TradeId = 10, // remove this when republished with long TradeId
+            // TradeId = tradeId,
                     Username = loggedInUser,
                     Symbol = symbol,
                     Units = parsedUnit,
@@ -174,9 +182,108 @@ namespace StockClient.Controllers
             
         }
 
-        public async Task<Stock> GetStockDetails(string inputSymbol)
+
+        
+        public async Task<ActionResult> CloseTrade(long tradeId)
+        {
+            //List<UserTrade> UserTradeInfo = new List<UserTrade>();
+            UserTrade UserTradeInfo = new UserTrade();
+            using (var client = new HttpClient())
+            {
+                //Passing service base url
+                client.BaseAddress = new Uri(Baseurl);
+                client.DefaultRequestHeaders.Clear();
+
+                //Define request data format
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                var loggedInUser = HttpContext.Session.GetString("LoggedInUser");
+                Console.WriteLine("Logged in user: " + loggedInUser);
+                string user = loggedInUser;
+                //Sending request to find web api REST service resource GetAllEmployees using HttpClient
+                HttpResponseMessage Res = await client.GetAsync("api/UserTrades?id=" + tradeId);
+
+                //Checking the response is successful or not which is sent using HttpClient
+                if (Res.IsSuccessStatusCode)
+                {
+                    //Storing the response details recieved from web api
+                    var UserTradeResponse = Res.Content.ReadAsStringAsync().Result;
+
+                    //Deserializing the response recieved from web api and storing into the Employee list
+                    //UserTradeInfo = JsonConvert.DeserializeObject<List<UserTrade>>(UserTradeResponse);
+                    UserTradeInfo = JsonConvert.DeserializeObject<UserTrade>(UserTradeResponse);
+                    Console.WriteLine("CloseTrade - Trade ID:" + UserTradeInfo.TradeId + "\nClosed By: " + UserTradeInfo.Username);
+
+                    UserTrade updatedUserTrade = new UserTrade
+                    {
+                        TradeId = UserTradeInfo.TradeId,
+                        Username = loggedInUser,
+                        Symbol = UserTradeInfo.Symbol,
+                        Units = UserTradeInfo.Units,
+                        Position = UserTradeInfo.Position,
+                        TradeOpenDate = UserTradeInfo.TradeOpenDate,
+                        TradeCloseDate = DateTime.Now.ToString("MM/dd/yyyy"),
+                        EntryPrice = UserTradeInfo.EntryPrice,
+                        Amount = UserTradeInfo.Amount
+                    };
+
+                    string id = tradeId.ToString();
+                    Console.WriteLine("tradeId is: " + id);
+                    //PUT
+                    var putTask = client.PutAsJsonAsync<UserTrade>("api/UserTrades/" + updatedUserTrade.TradeId.ToString(), updatedUserTrade);
+                    putTask.Wait();
+
+                    var result = putTask.Result;
+                    if (result.IsSuccessStatusCode)
+                    {
+                        return RedirectToAction("History");
+                    }
+                }
+
+                //returning the employee list to view
+                return RedirectToAction("History");
+
+            }
+        }
+        
+
+        public async Task<ActionResult> Delete(long tradeId)
         {
 
+            Console.WriteLine("UserTradesController - Delete");
+            UserTrade UserTradeInfo = new UserTrade();
+            using (var client = new HttpClient())
+            {
+                //Passing service base url
+                client.BaseAddress = new Uri(Baseurl);
+                client.DefaultRequestHeaders.Clear();
+
+                //Define request data format
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+
+                //Sending request to find web api REST service resource Delete UserTrade using HttpClient
+                HttpResponseMessage Res = await client.DeleteAsync("api/UserTrades/" + tradeId.ToString());
+
+                //Checking the response is successful or not which is sent using HttpClient
+                if (Res.IsSuccessStatusCode)
+                {
+                    //Storing the response details recieved from web api
+                    var UserTradeResponse = Res.Content.ReadAsStringAsync().Result;
+
+                    //Deserializing the response recieved from web api and storing into the Employee list
+                    UserTradeInfo = JsonConvert.DeserializeObject<UserTrade>(UserTradeResponse);
+                }
+
+                //returning the stock details to view
+                //return View(UserTradeInfo);
+                return RedirectToAction("History", "UserTrades");
+            }
+        }
+
+        public async Task<Stock> GetStockDetails(string inputSymbol)
+        {
+           
             //List<Stock> StockInfo = new List<Stock>();
             Stock StockInfo = new Stock();
             using (var client = new HttpClient())

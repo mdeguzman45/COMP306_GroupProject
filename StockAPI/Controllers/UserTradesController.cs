@@ -94,7 +94,7 @@ namespace StockAPI.Controllers
                 return BadRequest();
             }
 
-            if (await _stockRepository.TradeIdExists(userTrade.TradeId))
+            if (await _stockRepository.TradeIdExists((int)userTrade.TradeId))
             {
                 return NotFound();
             }

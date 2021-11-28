@@ -7,7 +7,7 @@ namespace StockAPI.Models
 {
     public partial class UserTrade
     {
-        public int TradeId { get; set; }
+        public long TradeId { get; set; }
         public string Username { get; set; }
         public string Symbol { get; set; }
         public decimal? Units { get; set; }

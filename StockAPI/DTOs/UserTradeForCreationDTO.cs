@@ -4,7 +4,7 @@ namespace StockAPI.DTOs
 {
     public class UserTradeForCreationDTO
     {
-        public int TradeId { get; set; }
+        public long TradeId { get; set; }
         public string Username { get; set; }
         public string Symbol { get; set; }
         [Required(ErrorMessage = "You should provide how many shares for the trade")]

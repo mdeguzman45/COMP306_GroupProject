@@ -27,9 +27,6 @@
                 @Html.DisplayNameFor(model => model.TradeOpenDate)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.TradeCloseDate)
-            </th>
-            <th>
                 @Html.DisplayNameFor(model => model.EntryPrice)
             </th>
             <th>
@@ -41,32 +38,32 @@
     <tbody>
         @foreach (var item in Model)
         {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.TradeId)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Symbol)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Units)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Position)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.TradeOpenDate)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.TradeCloseDate)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.EntryPrice)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Amount)
-                </td>
-            </tr>
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.TradeId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Symbol)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Units)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Position)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TradeOpenDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EntryPrice)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Amount)
+            </td>
+            <td>
+                <a asp-action="CloseTrade" asp-route-tradeId="@item.TradeId">Close Trade</a>
+            </td>
+        </tr>
         }
     </tbody>
 </table>
